@@ -50,7 +50,7 @@ public class ChristmasPresentService(IDbContextFactory<UsersContext> usersContex
     {
         using var usersContext = usersContextFactory.CreateDbContext();
 
-        var presentToUpdate = usersContext.ChristmasPresents.FirstOrDefault(present);
+        var presentToUpdate = usersContext.ChristmasPresents.AsEnumerable().FirstOrDefault(present);
 
         if (presentToUpdate != null)
         {

@@ -11,12 +11,20 @@
 
 @if (_distinctUsers != null && _distinctUsers.Count() > 0)
 {
-    @foreach(string recipient in _distinctUsers){
-        <h5>Presents for @recipient:</h5>
-        @foreach (ChristmasPresent present in _christmasPresents.Where(present => present.recipient == recipient))
+    @foreach(string recipient in _distinctUsers)
+    {
+        @if(_christmasPresents.Any(present => present.recipient == recipient))
         {
-            <p>@present.gift</p>
-            <p>Gotten? @present.gotten</p>
+            <h5>Presents for @recipient:</h5>
+            @foreach (ChristmasPresent present in _christmasPresents.Where(present => present.recipient == recipient))
+            {
+                <p>@present.gift</p>
+                <input type="checkbox" checked="@present.gotten" @onchange="((ChangeEventArgs e) => UpdateGottenStatusOfPresent(present, (bool)e.Value))"/>
+            }
+        }
+        else
+        {
+            <p>This person doesn't have any gifts! Let them know!!!</p>
         }
     }
 }
@@ -49,5 +57,10 @@ else
     private IEnumerable<ChristmasPresent> GetGroupedChristmasPresentsForOtherUsers()
     {
         return ChristmasPresentService.GetPresentsForNotThisUser(User.FindFirstValue("name"));
+    }
+
+    private void UpdateGottenStatusOfPresent(ChristmasPresent present, bool gottenStatus)
+    {
+        ChristmasPresentService.ChangeGottenStatusOfChristmasPresentForOtherUser(present, gottenStatus);
     }
 }
