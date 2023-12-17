@@ -7,7 +7,7 @@
 
 <PageTitle>Log In</PageTitle>
 
-<input @bind=username type="text"/>
+<input @bind=username type="text" @onkeyup="Enter"/>
 <button @onclick="LogIn">Log In</button>
 <button @onclick="LogOut">Log Out</button>
 
@@ -67,5 +67,20 @@
         NavigationManager.NavigateTo($"/api/logout", forceLoad: true);
 
         return;
+    }
+
+    private void Enter(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+            if (User.FindFirstValue("name") is null)
+            {
+                LogIn();
+            }
+            else
+            {
+                LogOut();
+            }
+        }
     }
 }
