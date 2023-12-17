@@ -1,0 +1,75 @@
+﻿@page "/myPresents"
+@rendermode InteractiveServer
+@attribute [Authorize]
+
+@using Christmas.Components.MongoDb
+@using Christmas.Components.Services
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using System.Security.Claims
+
+@inject ChristmasPresentService ChristmasPresentService
+
+@if (_myChristmasPresents != null && _myChristmasPresents.Count() > 0)
+{
+    <h5>Presents:</h5>
+    @foreach(string present in _myChristmasPresents)
+    {
+        <p>@present <button @onclick="@(() => DeleteChristmasPresent(present))" type="button">Delete</button></p>
+    }
+}
+else
+{
+    <p>Loading...</p>
+}
+
+<input @bind="presentToAdd" type="text"/>
+
+<button @onclick="AddChristmasPresent">Add Present</button>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+
+    private ClaimsPrincipal User { get; set; }
+
+    private IEnumerable<string>? _myChristmasPresents { get; set; }
+
+    private string? presentToAdd { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        User = (await authenticationState).User;
+
+        await Task.Run(RefreshMyChristmasPresents);
+
+        await base.OnInitializedAsync();
+    }
+
+    private void RefreshMyChristmasPresents()
+    {
+        _myChristmasPresents = ChristmasPresentService.GetPresentsForThisUser(User.FindFirstValue("name"));
+    }
+
+    private void AddChristmasPresent()
+    {
+        if(presentToAdd != null && presentToAdd.Length > 0)
+        {
+            ChristmasPresentService.AddChristmasPresentForThisUser(User.FindFirstValue("name"), presentToAdd);
+
+            RefreshMyChristmasPresents();
+
+            presentToAdd = "";
+        }
+    }
+
+    private void DeleteChristmasPresent(string presentToDelete)
+    {
+        ChristmasPresentService.DeleteChristmasPresentForThisUser(User.FindFirstValue("name"), presentToDelete);
+
+        RefreshMyChristmasPresents();
+    }
+}

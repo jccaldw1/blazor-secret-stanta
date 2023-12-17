@@ -24,7 +24,7 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddControllers();
-builder.Services.AddDbContext<UsersContext>(options =>
+builder.Services.AddDbContextFactory<UsersContext>(options =>
 {
     options.UseMongoDB(new MongoClient(builder.Configuration["MONGODB_URI"] ?? throw new Exception("can't find your stupid connectionstring")), "Users");
 });

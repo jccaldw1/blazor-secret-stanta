@@ -1,5 +1,4 @@
-﻿using Christmas.Components.MongoDbCollections;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
 using MongoDB.EntityFrameworkCore.Extensions;
 

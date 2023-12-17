@@ -1,7 +1,10 @@
-﻿using MongoDB.Bson;
+﻿using Microsoft.EntityFrameworkCore;
+using MongoDB.Bson;
+using System.ComponentModel.DataAnnotations;
 
-namespace Christmas.Components.MongoDbCollections;
+namespace Christmas.Components.MongoDb;
 
+[PrimaryKey(nameof(_id))]
 public class ChristmasPresent
 {
     public ObjectId _id { get; set; }
