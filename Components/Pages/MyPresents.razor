@@ -16,19 +16,25 @@
 @if (_myChristmasPresents != null && _myChristmasPresents.Count() > 0)
 {
     <h5>Presents:</h5>
+    <ul>
     @foreach(string present in _myChristmasPresents)
     {
-        <p>@present <button @onclick="@(() => DeleteChristmasPresent(present))" type="button">Delete</button></p>
+        <li>@present &nbsp;
+            @if (_myChristmasPresents.Count() > 1)
+            {
+                <button @onclick="@(() => DeleteChristmasPresent(present))" type="button">Delete</button>
+            }
+        </li>
     }
+    </ul>
 }
 else
 {
     <p>Loading...</p>
 }
 
-<input @bind="presentToAdd" type="text"/>
-
-<button @onclick="AddChristmasPresent">Add Present</button>
+<input @bind="presentToAdd" type="text" @onkeyup="Enter"/>
+<button @onclick="AddChristmasPresent" type="button">Add Present</button>
 
 @code {
     [CascadingParameter]
@@ -38,7 +44,7 @@ else
 
     private IEnumerable<string>? _myChristmasPresents { get; set; }
 
-    private string? presentToAdd { get; set; }
+    private string presentToAdd { get; set; } = "";
 
     protected async override Task OnInitializedAsync()
     {
@@ -66,10 +72,30 @@ else
         }
     }
 
+    private void AddChristmasPresent(string present)
+    {
+        if(present != null && present.Length > 0)
+        {
+            ChristmasPresentService.AddChristmasPresentForThisUser(User.FindFirstValue("name"), present);
+
+            RefreshMyChristmasPresents();
+
+            presentToAdd = "";
+        }
+    }
+
     private void DeleteChristmasPresent(string presentToDelete)
     {
         ChristmasPresentService.DeleteChristmasPresentForThisUser(User.FindFirstValue("name"), presentToDelete);
 
         RefreshMyChristmasPresents();
+    }
+
+    private void Enter(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+            AddChristmasPresent(presentToAdd);
+        }
     }
 }
