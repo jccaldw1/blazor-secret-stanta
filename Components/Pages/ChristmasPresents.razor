@@ -1,7 +1,10 @@
 ﻿@page "/presents"
+@attribute [Authorize]
+
 @using Christmas.Components.MongoDbCollections
 @using Christmas.Components.Services
 @using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
 @using System.Security.Claims
 
 @inject ChristmasPresentService ChristmasPresentService
@@ -10,16 +13,11 @@
     <Authorized>
         You're authorized!!
         @foreach(ChristmasPresent present in GetChristmasPresentsForOtherUsers()){
-            <p>Present:</p>
             <p>@present.recipient</p>
-            <p>@present.gift</p>
-            <p>@present.gotten</p>
         }
     </Authorized>
     <NotAuthorized>You are not authorized, please <a href="/login">login!</a></NotAuthorized>
 </AuthorizeView>
-
-<h3>ChristmasPresents</h3>
 
 @code {
     [CascadingParameter]
