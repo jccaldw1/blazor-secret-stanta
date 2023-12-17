@@ -1,0 +1,71 @@
+﻿@page "/login"
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
+
+@inject NavigationManager NavigationManager
+
+<PageTitle>Log In</PageTitle>
+
+<input @bind=username type="text"/>
+<button @onclick="LogIn">Log In</button>
+<button @onclick="LogOut">Log Out</button>
+
+<AuthorizeView>
+    <Authorized>
+        Welcome, @User.FindFirstValue("name")!
+    </Authorized>
+    <NotAuthorized>
+        Please login.
+        @if (FailedLogin != null && FailedLogin.Value)
+        {
+            <p>Authentication failed, please try again.</p>
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+
+    [SupplyParameterFromQuery(Name = "FailedLogin")]
+    private bool? FailedLogin { get; set; }
+
+    private ClaimsPrincipal User { get; set; }
+
+    private string? username;
+
+    private int currentCount = 0;
+
+    protected async override Task OnInitializedAsync()
+    {
+        User = (await authenticationState).User;
+
+        await base.OnInitializedAsync();
+    }
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+
+    private void LogIn()
+    {
+        if (username is null)
+            return;
+
+        NavigationManager.NavigateTo($"/api/login?username={Uri.EscapeDataString(username)}", forceLoad: true);
+
+        return;
+    }
+
+    private void LogOut()
+    {
+        if (User.FindFirstValue("name") is null)
+            return;
+
+        NavigationManager.NavigateTo($"/api/logout", forceLoad: true);
+
+        return;
+    }
+}
