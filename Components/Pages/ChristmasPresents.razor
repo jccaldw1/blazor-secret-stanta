@@ -18,8 +18,11 @@
             <h5>Presents for @recipient:</h5>
             @foreach (ChristmasPresent present in _christmasPresents.Where(present => present.recipient == recipient))
             {
-                <p>@present.gift</p>
-                <input type="checkbox" checked="@present.gotten" @onchange="((ChangeEventArgs e) => UpdateGottenStatusOfPresent(present, (bool)e.Value))"/>
+                <div class="row">
+                    <div class="col-3"/>
+                    <p class="col-2">@present.gift</p>
+                    <input class="col-1" type="checkbox" checked="@present.gotten" @onchange="((ChangeEventArgs e) => UpdateGottenStatusOfPresent(present, (bool)e.Value))"/>
+                </div>
             }
         }
         else
