@@ -17,6 +17,7 @@ public class UsersContext : DbContext
     : base(options)
     {
     }
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

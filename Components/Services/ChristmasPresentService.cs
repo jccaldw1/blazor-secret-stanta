@@ -31,7 +31,7 @@ public class ChristmasPresentService(IDbContextFactory<UsersContext> usersContex
             gotten = false
         };
 
-        var addedItemEntry = usersContext.ChristmasPresents.Add(presentToAdd);
+        usersContext.ChristmasPresents.Add(presentToAdd);
 
         usersContext.SaveChanges();
     }
@@ -52,11 +52,8 @@ public class ChristmasPresentService(IDbContextFactory<UsersContext> usersContex
 
         var presentToUpdate = usersContext.ChristmasPresents.AsEnumerable().FirstOrDefault(present);
 
-        if (presentToUpdate != null)
-        {
-            presentToUpdate.gotten = gotten;
+        presentToUpdate.gotten = gotten;
 
-            usersContext.SaveChanges();
-        }
+        usersContext.SaveChanges();
     }
 }

@@ -7,7 +7,7 @@
 
 <PageTitle>Log In</PageTitle>
 
-<input @bind=username type="text" @onkeyup="Enter"/>
+<input @bind=_username type="text" @onkeyup="Enter"/>
 <button @onclick="LogIn">Log In</button>
 <button @onclick="LogOut">Log Out</button>
 
@@ -26,54 +26,43 @@
 
 @code {
     [CascadingParameter]
-    private Task<AuthenticationState>? authenticationState { get; set; }
+    private Task<AuthenticationState>? AuthenticationState { get; set; }
 
     [SupplyParameterFromQuery(Name = "FailedLogin")]
     private bool? FailedLogin { get; set; }
 
-    private ClaimsPrincipal User { get; set; }
+    private ClaimsPrincipal? User { get; set; }
 
-    private string? username;
+    private string? _username;
 
-    private int currentCount = 0;
-
-    protected async override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        User = (await authenticationState).User;
+        if (AuthenticationState != null) User = (await AuthenticationState).User;
 
         await base.OnInitializedAsync();
     }
 
-    private void IncrementCount()
-    {
-        currentCount++;
-    }
-
     private void LogIn()
     {
-        if (username is null)
+        if (_username is null)
             return;
 
-        NavigationManager.NavigateTo($"/api/login?username={Uri.EscapeDataString(username)}", forceLoad: true);
-
-        return;
+        NavigationManager.NavigateTo($"/api/login?username={Uri.EscapeDataString(_username)}", forceLoad: true);
     }
 
     private void LogOut()
     {
-        if (User.FindFirstValue("name") is null)
+        if (User != null && User.FindFirstValue("name") is null)
             return;
 
         NavigationManager.NavigateTo($"/api/logout", forceLoad: true);
-
-        return;
     }
 
     private void Enter(KeyboardEventArgs e)
     {
         if (e.Code == "Enter" || e.Code == "NumpadEnter")
         {
-            if (User.FindFirstValue("name") is null)
+            if (User != null && User.FindFirstValue("name") is null)
             {
                 LogIn();
             }

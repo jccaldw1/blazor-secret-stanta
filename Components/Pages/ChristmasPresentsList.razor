@@ -1,0 +1,73 @@
+﻿@page "/presents"
+@attribute [Authorize]
+
+@using Christmas.Components.MongoDb
+@using Christmas.Components.Services
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
+
+@inject ChristmasPresentService ChristmasPresentService
+
+@if (DistinctUsers.Any())
+{
+    @foreach(string recipient in DistinctUsers)
+    {
+        @if(ChristmasPresents.Any(present => present.recipient == recipient))
+        {
+            <h5>Presents for @recipient:</h5>
+            @foreach (ChristmasPresent present in ChristmasPresents.Where(present => present.recipient == recipient))
+            {
+                <div class="row">
+                    <div class="col-3"/>
+                    <p class="col-2">@present.gift</p>
+                    <input class="col-1" type="checkbox" checked="@present.gotten" @onchange="e => UpdateGottenStatusOfPresent(present, (bool)e.Value)"/>
+                </div>
+            }
+        }
+        else
+        {
+            <p>This person doesn't have any gifts! Let them know!!!</p>
+        }
+    }
+}
+else
+{
+    <p>Loading...</p>
+}
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthenticationState { get; set; }
+
+    private ClaimsPrincipal? User{ get; set; }
+
+    private IEnumerable<string>? DistinctUsers { get; set; }
+
+    private IEnumerable<ChristmasPresent>? ChristmasPresents { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AuthenticationState != null) User = (await AuthenticationState).User;
+
+        ChristmasPresents = await Task.Run(GetGroupedChristmasPresentsForOtherUsers);
+
+        DistinctUsers = ChristmasPresents.Select(present => present.recipient).Distinct();
+
+        await base.OnInitializedAsync();
+    }
+
+    private IEnumerable<ChristmasPresent> GetGroupedChristmasPresentsForOtherUsers()
+    {
+        if (User != null) return ChristmasPresentService.GetPresentsForNotThisUser(
+            User.FindFirstValue("name") ?? throw new InvalidOperationException()
+        );
+        
+        return Enumerable.Empty<ChristmasPresent>();
+    }
+
+    private void UpdateGottenStatusOfPresent(ChristmasPresent present, bool gottenStatus)
+    {
+        ChristmasPresentService.ChangeGottenStatusOfChristmasPresentForOtherUser(present, gottenStatus);
+    }
+}

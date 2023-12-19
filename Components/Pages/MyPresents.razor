@@ -2,25 +2,21 @@
 @rendermode InteractiveServer
 @attribute [Authorize]
 
-@using Christmas.Components.MongoDb
 @using Christmas.Components.Services
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
-@using Microsoft.AspNetCore.Components.Forms
-@using Microsoft.AspNetCore.Components.Routing
-@using Microsoft.AspNetCore.Components.Web
 @using System.Security.Claims
 
 @inject ChristmasPresentService ChristmasPresentService
 
-@if (_myChristmasPresents != null && _myChristmasPresents.Count() > 0)
+@if (MyChristmasPresents != null && MyChristmasPresents.Any())
 {
     <h5>Presents:</h5>
     <ul>
-    @foreach(string present in _myChristmasPresents)
+    @foreach(string present in MyChristmasPresents)
     {
         <li>@present &nbsp;
-            @if (_myChristmasPresents.Count() > 1)
+            @if (MyChristmasPresents.Count() > 1)
             {
                 <button @onclick="@(() => DeleteChristmasPresent(present))" type="button">Delete</button>
             }
@@ -33,22 +29,22 @@ else
     <p>Loading...</p>
 }
 
-<input @bind="presentToAdd" type="text" @onkeyup="Enter"/>
+<input @bind="PresentToAdd" type="text" @onkeyup="Enter"/>
 <button @onclick="AddChristmasPresent" type="button">Add Present</button>
 
 @code {
     [CascadingParameter]
-    private Task<AuthenticationState>? authenticationState { get; set; }
+    private Task<AuthenticationState>? AuthenticationState { get; set; }
 
-    private ClaimsPrincipal User { get; set; }
+    private ClaimsPrincipal? User { get; set; }
 
-    private IEnumerable<string>? _myChristmasPresents { get; set; }
+    private IEnumerable<string>? MyChristmasPresents { get; set; }
 
-    private string presentToAdd { get; set; } = "";
+    private string PresentToAdd { get; set; } = "";
 
-    protected async override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        User = (await authenticationState).User;
+        if (AuthenticationState != null) User = (await AuthenticationState).User;
 
         await Task.Run(RefreshMyChristmasPresents);
 
@@ -57,36 +53,46 @@ else
 
     private void RefreshMyChristmasPresents()
     {
-        _myChristmasPresents = ChristmasPresentService.GetPresentsForThisUser(User.FindFirstValue("name"));
+        if (User != null) MyChristmasPresents = ChristmasPresentService.GetPresentsForThisUser(
+            User.FindFirstValue("name") ?? throw new InvalidOperationException()
+        );
     }
 
     private void AddChristmasPresent()
     {
-        if(presentToAdd != null && presentToAdd.Length > 0)
+        if(PresentToAdd.Length > 0)
         {
-            ChristmasPresentService.AddChristmasPresentForThisUser(User.FindFirstValue("name"), presentToAdd);
+            ChristmasPresentService.AddChristmasPresentForThisUser(User.FindFirstValue("name"), PresentToAdd);
 
             RefreshMyChristmasPresents();
 
-            presentToAdd = "";
+            PresentToAdd = "";
         }
     }
 
     private void AddChristmasPresent(string present)
     {
-        if(present != null && present.Length > 0)
+        if(present.Length > 0)
         {
-            ChristmasPresentService.AddChristmasPresentForThisUser(User.FindFirstValue("name"), present);
+            if (User != null)
+                ChristmasPresentService.AddChristmasPresentForThisUser(
+                    User.FindFirstValue("name") ?? throw new InvalidOperationException(),
+                    present
+                );
 
             RefreshMyChristmasPresents();
 
-            presentToAdd = "";
+            PresentToAdd = "";
         }
     }
 
     private void DeleteChristmasPresent(string presentToDelete)
     {
-        ChristmasPresentService.DeleteChristmasPresentForThisUser(User.FindFirstValue("name"), presentToDelete);
+        if (User != null) 
+            ChristmasPresentService.DeleteChristmasPresentForThisUser(
+        User.FindFirstValue("name") ?? throw new InvalidOperationException(),
+                presentToDelete
+            );
 
         RefreshMyChristmasPresents();
     }
@@ -95,7 +101,7 @@ else
     {
         if (e.Code == "Enter" || e.Code == "NumpadEnter")
         {
-            AddChristmasPresent(presentToAdd);
+            AddChristmasPresent(PresentToAdd);
         }
     }
 }
