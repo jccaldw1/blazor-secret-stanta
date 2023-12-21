@@ -4,19 +4,7 @@ using Christmas.Components.Services;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
 
-var connectionString = Environment.GetEnvironmentVariable("ASPNETCORE_MONGODB_URI");
-
-if (connectionString == null)
-{
-    Console.WriteLine("You must set your 'MONGODB_URI' environment variable. To learn how to set it, see https://www.mongodb.com/docs/drivers/csharp/current/quick-start/#set-your-connection-string");
-    Environment.Exit(0);
-}
-
 var builder = WebApplication.CreateBuilder(args);
-connectionString = builder.Configuration["MONGODB_URI"];
-
-//builder.Configuration.AddEnvironmentVariables("ASPNETCORE_");
-Console.WriteLine($"connectionstring: {connectionString}");
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -26,7 +14,7 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddControllers();
 builder.Services.AddDbContextFactory<UsersContext>(options =>
 {
-    options.UseMongoDB(new MongoClient(builder.Configuration["MONGODB_URI"] ?? throw new Exception("can't find your stupid connectionstring")), "Users");
+    options.UseMongoDB(new MongoClient(builder.Configuration["MONGODB_URI"] ?? throw new Exception("You must set your 'MONGODB_URI' environment variable. To learn how to set it, see https://www.mongodb.com/docs/drivers/csharp/current/quick-start/#set-your-connection-string")), "Users");
 });
 
 builder.Services.AddTransient<MongoDbUserService>();
