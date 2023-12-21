@@ -1,4 +1,5 @@
 using Christmas.Components;
+using Christmas.Components.Container;
 using Christmas.Components.MongoDb.Contexts;
 using Christmas.Components.Services;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,7 @@ builder.Services.AddDbContextFactory<UsersContext>(options =>
 
 builder.Services.AddTransient<MongoDbUserService>();
 builder.Services.AddTransient<ChristmasPresentService>();
+builder.Services.AddScoped<SelectedUserContainer>();
 
 var authenticationBuilder = builder.Services.AddAuthentication("Cookies");
 authenticationBuilder.AddCookie("Cookies");
