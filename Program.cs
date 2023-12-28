@@ -28,6 +28,8 @@ builder.Services.AddTransient<MongoDbUserService>();
 builder.Services.AddTransient<ChristmasPresentService>();
 builder.Services.AddScoped<SelectedUserContainer>();
 
+
+
 var authenticationBuilder = builder.Services.AddAuthentication("Cookies");
 authenticationBuilder.AddCookie("Cookies");
 
