@@ -42,6 +42,8 @@ jobs:
     - name: Azure Login
       uses: azure/login@v1
       with:
+        client-id: 0ea2e9fb-04d1-4ca4-82fa-6b4313abcb57
+        tenant-id: a8b7e571-defe-4c61-ba14-6beccf2fba9c
         creds: ${{ secrets.christmas_app_20231228144959_SPN }}
     - name: Deploy to containerapp
       uses: azure/CLI@v1
