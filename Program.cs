@@ -13,6 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 var BlobStorageUri = builder.Configuration["AzureURIs:BlobStorage"];
 var KeyVaultURI = builder.Configuration["AzureURIs:KeyVault"];
 
+builder.Services.AddLogging();
+
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
