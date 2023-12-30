@@ -21,7 +21,7 @@ public class LoginController(MongoDbUserService mongoDbUserService) : Controller
         }
         catch (InvalidOperationException exception)
         {
-            return Redirect("/login?FailedLogin=true");
+            return Redirect("/?FailedLogin=true");
         }
         
         var identity = new ClaimsIdentity("Cookies");
@@ -31,7 +31,7 @@ public class LoginController(MongoDbUserService mongoDbUserService) : Controller
 
         var authProps = new AuthenticationProperties
         {
-            RedirectUri = "/"
+            RedirectUri = "/ChristmasPresents"
         };
 
         return SignIn(claimsPrincipal, authProps, "Cookies");
