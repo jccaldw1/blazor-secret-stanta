@@ -21,7 +21,7 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddControllers();
 builder.Services.AddDbContextFactory<UsersContext>(options =>
 {
-    options.UseMongoDB(new MongoClient(builder.Configuration["MONGODB_URI"] ?? throw new Exception("You must set your 'MONGODB_URI' environment variable. To learn how to set it, see https://www.mongodb.com/docs/drivers/csharp/current/quick-start/#set-your-connection-string")), "Users");
+    options.UseMongoDB(new MongoClient(builder.Configuration["MONGODB-URI"] ?? throw new Exception("You must set your 'MONGODB-URI' environment variable. To learn how to set it, see https://www.mongodb.com/docs/drivers/csharp/current/quick-start/#set-your-connection-string")), "Users");
 });
 
 builder.Services.AddTransient<MongoDbUserService>();
