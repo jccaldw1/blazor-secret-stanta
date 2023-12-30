@@ -7,14 +7,12 @@ using Christmas.Components.Services;
 namespace Christmas.Components.Controllers;
 
 [AllowAnonymous]
-public class LoginController(MongoDbUserService mongoDbUserService, LoggerFactory loggerFactory) : Controller
+public class LoginController(MongoDbUserService mongoDbUserService) : Controller
 {
     [Route("api/login")]
     [HttpGet]
     public IActionResult Login([FromQuery] string codename)
     {
-        var loginLogger = loggerFactory.CreateLogger("Login");
-        loginLogger.LogInformation($"Attempted login with codename {codename}");
         string authenticatedUsername;
         
         try
