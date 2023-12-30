@@ -12,4 +12,3 @@ public class MongoDbUserService(UsersContext usersContext)
         return codenameUser.name;
     }
 }
-

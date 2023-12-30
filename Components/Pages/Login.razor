@@ -7,7 +7,8 @@
 
 <PageTitle>Log In</PageTitle>
 
-<input @bind=_username type="text" @onkeyup="Enter"/>
+<h6>Please enter your codename.</h6>
+<input @bind=_codename type="text" @onkeyup="Enter"/>
 <button @onclick="LogIn">Log In</button>
 <button @onclick="LogOut">Log Out</button>
 
@@ -33,7 +34,7 @@
 
     private ClaimsPrincipal? User { get; set; }
 
-    private string? _username;
+    private string? _codename;
 
     protected override async Task OnInitializedAsync()
     {
@@ -44,10 +45,10 @@
 
     private void LogIn()
     {
-        if (_username is null)
+        if (_codename is null)
             return;
 
-        NavigationManager.NavigateTo($"/api/login?username={Uri.EscapeDataString(_username)}", forceLoad: true);
+        NavigationManager.NavigateTo($"/api/login?codename={Uri.EscapeDataString(_codename)}", forceLoad: true);
     }
 
     private void LogOut()
