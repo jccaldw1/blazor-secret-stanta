@@ -7,23 +7,22 @@
 
 <PageTitle>Log In</PageTitle>
 
-<h6>Please enter your codename.</h6>
-<input @bind=_codename type="text" @onkeyup="Enter"/>
-<button @onclick="LogIn">Log In</button>
-<button @onclick="LogOut">Log Out</button>
-
 <AuthorizeView>
     <Authorized>
         Welcome, @User.FindFirstValue("name")!
+        <button @onclick="LogOut">Log Out</button>
     </Authorized>
     <NotAuthorized>
-        Please login.
+        <h6>Please enter your codename.</h6>
         @if (FailedLogin != null && FailedLogin.Value)
         {
             <p>Authentication failed, please try again.</p>
         }
+        <input @bind=_codename type="text" @onkeyup="Enter"/>
+        <button @onclick="LogIn">Log In</button>
     </NotAuthorized>
 </AuthorizeView>
+
 
 @code {
     [CascadingParameter]

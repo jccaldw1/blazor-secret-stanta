@@ -31,7 +31,7 @@ public class LoginController(MongoDbUserService mongoDbUserService) : Controller
 
         var authProps = new AuthenticationProperties
         {
-            RedirectUri = "/ChristmasPresents"
+            RedirectUri = "/presents"
         };
 
         return SignIn(claimsPrincipal, authProps, "Cookies");
@@ -43,7 +43,7 @@ public class LoginController(MongoDbUserService mongoDbUserService) : Controller
     {
         var authProps = new AuthenticationProperties
         {
-            RedirectUri = "/logout"
+            RedirectUri = "/"
         };
 
         return SignOut(authProps, "Cookies");
