@@ -11,24 +11,30 @@ public class LoginController(MongoDbUserService mongoDbUserService) : Controller
 {
     [Route("api/login")]
     [HttpGet]
-    public IActionResult Login([FromQuery] string username)
+    public IActionResult Login([FromQuery] string codename)
     {
-        if (mongoDbUserService.IsValidUser(username))
+        string authenticatedUsername;
+        
+        try
         {
-            var identity = new ClaimsIdentity("Cookies");
-            identity.AddClaim(new("name", username));
-
-            var claimsPrincipal = new ClaimsPrincipal(identity);
-
-            var authProps = new AuthenticationProperties
-            {
-                RedirectUri = "/"
-            };
-
-            return SignIn(claimsPrincipal, authProps, "Cookies");
+            authenticatedUsername = mongoDbUserService.GetUsername(codename.ToLower());
         }
+        catch (InvalidOperationException exception)
+        {
+            return Redirect("/login?FailedLogin=true");
+        }
+        
+        var identity = new ClaimsIdentity("Cookies");
+        identity.AddClaim(new("name", authenticatedUsername));
 
-        return Redirect("/login?FailedLogin=true");
+        var claimsPrincipal = new ClaimsPrincipal(identity);
+
+        var authProps = new AuthenticationProperties
+        {
+            RedirectUri = "/"
+        };
+
+        return SignIn(claimsPrincipal, authProps, "Cookies");
     }
 
     [Route("api/logout")]
