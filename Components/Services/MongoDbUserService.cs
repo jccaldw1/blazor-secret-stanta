@@ -5,7 +5,11 @@ namespace Christmas.Components.Services;
 
 public class MongoDbUserService(UsersContext usersContext)
 {
-    public bool IsValidUser(string username) =>
-        usersContext.ChristmasPresents.Any(christmasPresent => christmasPresent.recipient == username);
+    public string GetUsername(string codename)
+    {
+        var codenameUser = usersContext.ChristmasPasswords.First(christmasPassword => christmasPassword.password == codename);
+
+        return codenameUser.name;
+    }
 }
 
